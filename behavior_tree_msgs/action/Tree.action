@@ -1,0 +1,28 @@
+#goal definition
+string goal_id
+behavior_tree_msgs/BehaviorTreeDescriptor descriptor
+
+behavior_tree_msgs/ActionExtender control
+---
+### result definition ###
+string result
+
+int32 error_code
+int32 SUCCESSFUL = 0
+int32 ERROR = -2
+
+# Human readable description of the error code.
+string error_string
+
+#in seconds
+float32 duration
+
+---
+### feedback ###
+builtin_interfaces/Time timestamp
+builtin_interfaces/Time start
+builtin_interfaces/Time estimated_end
+
+# Human readable feedback description
+string state_string
+string error_string

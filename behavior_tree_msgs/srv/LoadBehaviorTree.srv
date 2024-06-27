@@ -1,0 +1,4 @@
+# Service for loading a behavior tree and its blackboard
+BehaviorTreeDescriptor tree
+---
+bool success

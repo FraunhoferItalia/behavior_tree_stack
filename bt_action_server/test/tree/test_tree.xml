@@ -1,0 +1,21 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+    <!-- ////////// -->
+    <include path="src/bt_action_server/test/tree/test_subtree.xml" />
+    <BehaviorTree ID="MainTree">
+        <Sequence>
+            <Action ID="PublishString" topic_name="test" message="Hello world!" />
+            <Delay delay_msec="500">
+                <Action ID="bt_demo_skills::Trigger" service_name="test_service_server" />
+            </Delay>
+            <Delay delay_msec="1000">
+                <AlwaysSuccess />
+            </Delay>
+            <SubTree ID="SubTree" />
+        </Sequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel>
+        <Action ID="TriggerService" />
+    </TreeNodesModel>
+    <!-- ////////// -->
+</root>

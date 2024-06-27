@@ -1,0 +1,5 @@
+# Service for listing active behavior trees
+
+---
+BehaviorTreeDescriptor[] trees
+bool success

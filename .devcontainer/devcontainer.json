@@ -1,0 +1,23 @@
+// See https://aka.ms/vscode-remote/devcontainer.json for format details.
+{
+	"name": "ROS devcontainer for VS Code",
+	"dockerComposeFile": [
+		"../docker-compose.yml"
+	],
+	"service": "ros_docker",
+	"workspaceFolder": "/ros_ws",
+	"shutdownAction": "stopCompose",
+	"extensions": [
+		"dotjoshjohnson.xml",
+		"zachflower.uncrustify",
+		"ms-azuretools.vscode-docker",
+		"ms-iot.vscode-ros",
+		"ms-python.python",
+		"ms-vscode.cpptools",
+		"redhat.vscode-yaml",
+		"smilerobotics.urdf",
+		"streetsidesoftware.code-spell-checker",
+		"twxs.cmake",
+		"yzhang.markdown-all-in-one"
+	]
+}

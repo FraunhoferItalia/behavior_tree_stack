@@ -1,0 +1,10 @@
+<root BTCPP_format="4" main_tree_to_execute="Nonsense">
+    <!-- ////////// -->
+    <BehaviorTree ID="Nonsense">
+        <Sequence>
+            <Nonsense />
+        </Sequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <!-- ////////// -->
+</root>

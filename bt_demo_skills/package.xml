@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>bt_demo_skills</name>
+  <version>0.0.0</version>
+  <description>Demo skills package for the Fraunhofer Italia behavior tree stack</description>
+  <author email="michael.terzer@fraunhofer.it">Michael Terzer</author>
+  <maintainer email="michael.terzer@fraunhofer.it">Michael Terzer</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>rclcpp</depend>
+  <depend>std_msgs</depend>
+  <depend>std_srvs</depend>
+  <depend>bt_executor</depend>
+  <depend>pluginlib</depend>
+  <depend>behaviortree_cpp</depend>
+  <depend>behaviortree_ros2</depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <bt_demo_skills plugin="plugins.xml" />
+    <bt_demo_skills config="config/publish_string.xml" />
+    <bt_demo_skills config="config/trigger.xml" />
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

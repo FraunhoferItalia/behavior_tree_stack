@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<root BTCPP_format="4"  main_tree_to_execute="TestSubtree">
+    <!-- ////////// -->
+    <BehaviorTree ID="TestSubtree">
+        <Sequence>
+            <Delay delay_msec="1">
+                <AlwaysSuccess/>
+            </Delay>
+            <RetryUntilSuccessful num_attempts="{key}">
+                <AlwaysFailure/>
+            </RetryUntilSuccessful>
+            <AlwaysSuccess/>
+            <AlwaysSuccess/>
+        </Sequence>
+    </BehaviorTree>
+    <TreeNodesModel>
+        <SubTree ID="TestSubtree">
+            <input_port default="false" name="__shared_blackboard"/>
+            <input_port default="1" name="key"/>
+        </SubTree>
+    </TreeNodesModel>
+</root>

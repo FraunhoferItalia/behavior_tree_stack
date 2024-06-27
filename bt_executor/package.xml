@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>bt_executor</name>
+  <version>0.0.1</version>
+
+  <description>The bt_executor package</description>
+  <maintainer email="michael.terzer@fraunhofer.it">Michael Terzer</maintainer>
+  <author email="michael.terzer@fraunhofer.it">Michael Terzer</author>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>rclpy</depend>
+  <depend>behavior_tree_msgs</depend>
+  <depend>behaviortree_ros2</depend>
+  <depend>yaml-cpp</depend>
+  <depend>pluginlib</depend>
+  <depend>behaviortree_cpp</depend>
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+
+</package>

@@ -1,0 +1,6 @@
+# Service for loading a behavior tree and its blackboard
+BehaviorTreeDescriptor[] trees
+PreemptionPolicy preemption_policy
+SchedulingPolicy scheduling_policy
+---
+bool success

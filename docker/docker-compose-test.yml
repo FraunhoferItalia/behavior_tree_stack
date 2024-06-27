@@ -1,0 +1,20 @@
+version: "3.9"
+services:
+  behavior_tree_stack_test:
+    build:
+      context: ..
+      dockerfile: docker/test.dockerfile
+      args:
+        - RUN_TESTS=true
+        - FAIL_ON_TEST_FAILURE=true
+    tty: true
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+    network_mode: host
+    privileged: true
+    volumes:
+      - ./..:/ros_ws/src
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - /tmp/.docker.xauth:/tmp/.docker.xauth:rw

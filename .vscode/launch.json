@@ -1,0 +1,41 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    // Example launch of a python file
+    {
+      "name": "Python: Current File",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+    },
+    // Example gdb launch of a ros executable
+    {
+      "type": "cppdbg",
+      "request": "launch",
+      "name": "Attach to gdbserver",
+      "cwd": "${workspaceFolder}",
+      "program":"/ros_ws/install/bt_executor/lib/bt_executor/bt_executor_node",
+      "miDebuggerPath": "/usr/bin/gdb",
+      "miDebuggerServerAddress": "localhost:3000",
+      "useExtendedRemote": true
+  }
+  ],
+  "inputs": [
+    {
+      "id": "package",
+      "type": "promptString",
+      "description": "Package name",
+      // "default": "examples_rclcpp_minimal_publisher"
+    },
+    {
+      "id": "program",
+      "type": "promptString",
+      "description": "Program name",
+      // "default": "publisher_member_function"
+    }
+  ]
+}

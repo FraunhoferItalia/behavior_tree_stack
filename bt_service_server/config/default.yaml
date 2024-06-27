@@ -1,0 +1,27 @@
+bt_executor_node:
+  ros__parameters:
+    is_terminal_logging: true
+    is_logging: true
+    log_folder_name: "logs/"
+    loop_rate: 10
+    zmq_publisher_port: 1666
+    zmq_server_port: 1667
+    behavior_tree_definitions_path: "config/trees/behavior_trees.yaml"
+    behavior_trees_path: "config/trees"
+    default_tree_name: "tree_1"
+
+
+bt_service_server_node:
+  ros__parameters:
+    bt_service_server_name: "bt_service_server"
+    play_default_tree_service_name: "play"
+    play_specific_tree_service_name: "play_specific"
+    load_and_run_service_name: "load_and_play"
+    pause_service_name: "pause"
+    resume_service_name: "resume"
+    stop_service_name: "stop"
+    manual_tick_service_name: "manual_tick"
+    default_tree_name: "tree_1"
+    bt_state_topic_name: "bt_state"
+    update_dt_sec: 0.1 
+

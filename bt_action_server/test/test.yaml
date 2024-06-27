@@ -1,0 +1,12 @@
+behavior_tree_definitions:
+  { test_tree_1: $(find bt_action_server)/test/tree/test_tree.xml }
+
+action_ns: "bt_action_server"
+is_terminal_logging: true
+is_logging: true
+log_folder_name: "$(find bt_action_server)/logs/"
+loop_rate: 1
+zmq_publisher_port: 1666
+zmq_server_port: 1667
+default_tree_name: "test_tree_1"
+output_xml: "behavior_tree.xml"

@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<root>
+    <TreeNodesModel>
+        <Action ID="PublishString">
+            <input_port name="message">Message to be published</input_port>
+            <input_port name="topic_name">Topic name</input_port>
+        </Action>
+    </TreeNodesModel>
+</root>

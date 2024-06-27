@@ -1,0 +1,4 @@
+behavior_tree_definitions:
+    tree_1: "test_tree.xml"
+    tree_2: "test_tree_2.xml"
+  

@@ -1,0 +1,5 @@
+<library path="libbt_demo_skills">
+  <class type="bt_demo_skills::SkillLibrary" base_class_type="bt_skill::SkillLibraryBase">
+    <description>Demo plugin for loading all the skills of the default ROS communication library.</description>
+  </class>
+</library>

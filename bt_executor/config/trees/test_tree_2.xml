@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<root BTCPP_format="4" main_tree_to_execute="TestTree2">
+    <!-- ////////// -->
+    <BehaviorTree ID="TestTree2">
+        <Sequence>
+            <AlwaysSuccess />
+            <Delay delay_msec="500">
+                <AlwaysSuccess />
+            </Delay>
+            <Delay delay_msec="1000">
+                <AlwaysSuccess />
+            </Delay>
+            <AlwaysSuccess />
+        </Sequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel />
+    <!-- ////////// -->
+</root>
