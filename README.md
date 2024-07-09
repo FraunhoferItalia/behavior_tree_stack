@@ -76,7 +76,7 @@ Please find parts of this work in the below article. Any citation would be very 
 
 ```
 @article{Terzer2024,
-  title = {A Facilitated Construction Robot Programming Approach based on Building Information Modelling},
+  title = {A Facilitated Construction Robot Programming Approach using Building Information Modelling},
   author = {Terzer, Michael and Flatscher, Tobit and Magri, Marco and Garbin, Simone and Emig, Julius and Giusti, Andrea},
   journal = {10th International Conference on Control, Decision and Information Technologies CoDIT24},
   year = {2024},
