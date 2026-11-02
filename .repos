@@ -1,10 +1,9 @@
- repositories:
-  BehaviorTree.CPP:
+repositories:
+  9_dependencies/BehaviorTree.CPP:
     type: git
-    url: 'https://github.com/BehaviorTree/BehaviorTree.CPP'
-    version: 'a1f431c1d91a6f07b601af3165b0d71973c2558b'
-  BehaviorTree.ROS2:
+    url: "https://github.com/BehaviorTree/BehaviorTree.CPP"
+    version: "a1f431c1d91a6f07b601af3165b0d71973c2558b"
+  9_dependencies/BehaviorTree.ROS2:
     type: git
-    url: 'https://github.com/BehaviorTree/BehaviorTree.ROS2'
-    version: 'bb5535e47921a898fd60a7431300e9ca19ec3533'
-
+    url: "https://github.com/BehaviorTree/BehaviorTree.ROS2"
+    version: "6c6aa078ee7bc52fec98984bed4964556abf5beb"

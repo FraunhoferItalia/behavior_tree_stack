@@ -17,9 +17,7 @@ def launch_setup(context, *args, **kwargs):
         output="screen",
         parameters=[
             LaunchConfiguration('config_file_path').perform(context),
-            {"behavior_tree_definitions_path" : LaunchConfiguration('behavior_tree_definitions_path').perform(context),
-            "behavior_trees_path" : LaunchConfiguration('behavior_trees_path').perform(context)
-            }
+            {"behavior_trees_path" : LaunchConfiguration('behavior_trees_path').perform(context)}
         ],
         emulate_tty=True
     )
@@ -30,9 +28,6 @@ def generate_launch_description():
         DeclareLaunchArgument('config_file_path', 
             default_value=os.path.join(get_package_share_directory("bt_action_server"), "config", "default.yaml"), 
             description="Path to the node configuration file."),
-        DeclareLaunchArgument('behavior_tree_definitions_path', 
-            default_value=os.path.join(get_package_share_directory("bt_action_server"), "config", "trees/behavior_trees.yaml"), 
-            description="Path to the behavior trees configuration file."),
         DeclareLaunchArgument('behavior_trees_path', 
             default_value=os.path.join(get_package_share_directory("bt_action_server"), "config", "trees/"), 
             description="Path to the behavior trees configuration file."),

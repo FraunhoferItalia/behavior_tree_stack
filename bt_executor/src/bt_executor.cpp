@@ -57,10 +57,8 @@ bool BehaviorTreeExecutor::readParameters()
   node_->declare_parameter<bool>("is_terminal_logging", true);
   node_->declare_parameter<std::string>("log_folder_name", package_share_directory + "/test/");
   node_->declare_parameter<std::string>(
-    "behavior_tree_definitions_path",
-    package_share_directory + "/config/trees/behavior_trees.yaml");
-  node_->declare_parameter<std::string>(
     "behavior_trees_path", package_share_directory + "/config/trees/");
+  node_->declare_parameter<std::vector<std::string>>("subtrees_paths", std::vector<std::string>());
   node_->declare_parameter<std::string>("run_behavior_tree_path", "");
   node_->declare_parameter<int>("zmq_publisher_port", 1666);
   node_->declare_parameter<int>("zmq_server_port", 1667);
@@ -77,12 +75,11 @@ bool BehaviorTreeExecutor::readParameters()
   rclcpp::Parameter log_folder_name_param_ = node_->get_parameter("log_folder_name");
   log_folder_name_ = log_folder_name_param_.as_string();
 
-  rclcpp::Parameter behavior_tree_definitions_path_param_ =
-    node_->get_parameter("behavior_tree_definitions_path");
-  behavior_tree_definitions_path_ = behavior_tree_definitions_path_param_.as_string();
-
   rclcpp::Parameter behavior_trees_path_param_ = node_->get_parameter("behavior_trees_path");
   behavior_trees_path_ = behavior_trees_path_param_.as_string();
+
+  rclcpp::Parameter subtrees_paths_param_ = node_->get_parameter("subtrees_paths");
+  subtrees_paths_ = subtrees_paths_param_.as_string_array();
 
   rclcpp::Parameter zmq_publisher_port_param_ = node_->get_parameter("zmq_publisher_port");
   zmq_publisher_port_ = zmq_publisher_port_param_.as_int();
@@ -99,32 +96,18 @@ bool BehaviorTreeExecutor::readParameters()
   rclcpp::Parameter output_xml_param_ = node_->get_parameter("output_xml");
   output_xml_ = output_xml_param_.as_string();
 
-  auto config = parseYamlFile(behavior_tree_definitions_path_);
-  RCLCPP_INFO_STREAM(node_->get_logger(), behavior_tree_definitions_path_);
-  if (!config) {
-    return false;
-  }
-
-  const YAML::Node tree_definitions = config.value()["behavior_tree_definitions"];
-
-  for (YAML::const_iterator it = tree_definitions.begin(); it != tree_definitions.end(); ++it) {
-    std::string key = it->first.as<std::string>();
-    behavior_tree_definitions_.emplace(
-      std::make_pair(key, behavior_trees_path_ + it->second.as<std::string>()));
-  }
-
   rclcpp::Parameter run_behavior_tree_path_param_ = node_->get_parameter("run_behavior_tree_path");
   run_behavior_tree_path_ = run_behavior_tree_path_param_.as_string();
-  std::string run_behavior_tree_name_;
+
+  std::string run_behavior_tree_name;
   if (run_behavior_tree_path_ != "") {
-    std::ifstream t(run_behavior_tree_path_);
-    std::stringstream buffer;
-    buffer << t.rdbuf();
-    run_behavior_tree_name_ = extractNameFromXml(buffer.str());
-    if (run_behavior_tree_name_ == "") return false;
-    default_tree_name_ = run_behavior_tree_name_;
-    behavior_tree_definitions_.emplace(run_behavior_tree_name_, run_behavior_tree_path_);
+    run_behavior_tree_name = extractNameFromFile(run_behavior_tree_path_);
+    if (run_behavior_tree_name == "") return false;
+    default_tree_name_ = run_behavior_tree_name;
+    behavior_tree_definitions_.emplace(default_tree_name_, run_behavior_tree_path_);
   }
+
+  loadTrees(behavior_trees_path_);
 
   return true;
 }
@@ -139,6 +122,27 @@ std::optional<YAML::Node> BehaviorTreeExecutor::parseYamlFile(const std::string 
     return {};
   }
   return config;
+}
+
+bool BehaviorTreeExecutor::loadTrees(const std::string &path)
+{
+  // Iterate in path and load all trees
+  for (const auto & entry : fs::recursive_directory_iterator(path)) {
+    if (entry.is_regular_file() && entry.path().extension() == ".xml") {
+      std::string name = extractNameFromFile(entry.path().string());
+      std::cout << fs::weakly_canonical(entry.path()).string() << std::endl;
+      auto [it, inserted] =
+        behavior_tree_definitions_.emplace(name, fs::weakly_canonical(entry.path()).string());
+      if (!inserted) {
+        RCLCPP_WARN_STREAM(
+          node_->get_logger(), "Tree with main_tree_to_execute=\""
+                                  << name << "\" from " << fs::weakly_canonical(entry.path())
+                                  << " collides with already loaded tree from " << it->second
+                                  << ", skipping.");
+      }
+    }
+  }
+  return true;
 }
 
 bool BehaviorTreeExecutor::loadTrees(const std::map<std::string, std::string> trees_map)
@@ -187,6 +191,19 @@ bool BehaviorTreeExecutor::writeXMLfromTree(std::shared_ptr<BT::Tree> tree, std:
   bt_file.open(path);
   bt_file << BT::WriteTreeToXML(*tree, false, false);
   bt_file.close();
+  return true;
+}
+
+std::string BehaviorTreeExecutor::extractNameFromFile(const std::string & file_path)
+{
+    std::ifstream file(file_path);
+    if (!file.is_open()) {
+      RCLCPP_ERROR(node_->get_logger(), "Could not open file: %s", file_path.c_str());
+      return {};
+    }
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    return extractNameFromXml(buffer.str());
 }
 
 std::string BehaviorTreeExecutor::extractNameFromXml(const std::string & xml)
@@ -269,6 +286,11 @@ bool BehaviorTreeExecutor::loadTree(const std::string & xml, std::map<std::strin
 
   try {
     tree = std::make_shared<BT::Tree>(factory_.createTree(tree_to_execute_name, blackboard_));
+  } catch (const std::exception & e) {
+    RCLCPP_ERROR_STREAM(
+      node_->get_logger(),
+      "Was not able to create behavior tree from file! Exception: " << e.what());
+    return false;
   } catch (...) {
     RCLCPP_ERROR_STREAM(
       node_->get_logger(),
@@ -306,10 +328,17 @@ bool BehaviorTreeExecutor::loadTree(Descriptor const & descriptor)
   try {
     tree = std::make_shared<BT::Tree>(
       factory_.createTree(tree_to_execute_name, descriptor.getBlackboard()));
+  } catch (const std::exception & e) {
+    RCLCPP_ERROR_STREAM(
+      node_->get_logger(),
+      "Was not able to create behavior tree from file! Exception: " << e.what());
+    return false;
   } catch (...) {
     RCLCPP_ERROR_STREAM(
       node_->get_logger(),
-      "Was not able to create behavior tree from file! Check if you registered all nodes!");
+      "Was not able to create behavior tree from file! Check if you registered all nodes and "
+      "that "
+      "all input- and output-ports are set correctly in your xml.");
     return false;
   }
 
@@ -325,11 +354,14 @@ bool BehaviorTreeExecutor::loadTrees()
   }
   RCLCPP_INFO_STREAM(node_->get_logger(), "Loading trees...");
 
+  loadSubtrees();
+
   try {
     for (auto [first, second] : behavior_tree_definitions_) {
       RCLCPP_INFO_STREAM(node_->get_logger(), first);
       RCLCPP_INFO_STREAM(node_->get_logger(), second);
-      auto tree = std::make_shared<BT::Tree>(factory_.createTreeFromFile(second));
+      factory_.registerBehaviorTreeFromFile(second);
+      auto tree = std::make_shared<BT::Tree>(factory_.createTree(first));
       addTreeToMap(first, tree);
     }
   } catch (const std::exception & e) {
@@ -344,6 +376,28 @@ bool BehaviorTreeExecutor::loadTrees()
     } catch (const std::exception & e) {
       RCLCPP_ERROR_STREAM(
         node_->get_logger(), "Was not able to create directory. Exception: " << e.what());
+    }
+  }
+  return true;
+}
+
+bool BehaviorTreeExecutor::loadSubtrees()
+{
+  for (auto path : subtrees_paths_) {
+    RCLCPP_INFO_STREAM(node_->get_logger(), "Loading subtrees from folder: " << path);
+    using std::filesystem::recursive_directory_iterator;
+    for (const auto & entry : recursive_directory_iterator(path)) {
+      if (entry.is_regular_file() && entry.path().extension() == ".xml") {
+        try {
+          factory_.registerBehaviorTreeFromFile(entry.path().string());
+          RCLCPP_INFO(
+            node_->get_logger(), "Loaded BehaviorTree: %s", entry.path().filename().c_str());
+        } catch (const std::exception & e) {
+          RCLCPP_ERROR(
+            node_->get_logger(), "Failed to load BehaviorTree: %s \n %s",
+            entry.path().filename().c_str(), e.what());
+        }
+      }
     }
   }
   return true;

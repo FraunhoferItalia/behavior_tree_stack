@@ -222,12 +222,34 @@ public:
    */
   std::string extractNameFromDescriptor(Descriptor const & descriptor);
   /**
+   * @brief extracts the name from a file.
+   * 
+   * @param file_path 
+   * @return std::string 
+   */
+  std::string extractNameFromFile(const std::string & file_path);
+  /**
+   * @brief loads the trees indicated on the map behavior_tree_path_.
+   *
+   * @return true if successful,
+   * @return false otherwise.
+   */
+  bool loadTrees(const std::string &path);
+
+  /**
    * @brief loads the trees indicated on the map behavior_tree_definitions.
    *
    * @return true if successful,
    * @return false otherwise.
    */
   bool loadTrees();
+  /**
+   * @brief loads the subtrees indicated in the vector subtrees_paths_.
+   *
+   * @return true if successful,
+   * @return false otherwise.
+   */
+  bool loadSubtrees();
   /**
    * @brief loads the trees indicated on the map trees_map.
    *
@@ -327,8 +349,8 @@ private:
   bool is_logging_;                             // flag for logging traces to files.
   bool is_terminal_logging_;                    // flag for logging traces to files.
   std::string log_folder_name_;                 // folder to which log is saved.
-  std::string behavior_tree_definitions_path_;  // path containing the xml defining the BT.
   std::string behavior_trees_path_;             // path to the behavior trees
+  std::vector<std::string> subtrees_paths_;     // paths to the subtrees
   std::string run_behavior_tree_path_;          // run and load behavior tree imediately.
   int zmq_publisher_port_;                      // the port for the zmq publisher (Groot).
   int zmq_server_port_;                         // the port for the zmq server (Groot).

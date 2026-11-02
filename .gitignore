@@ -1,3 +1,7 @@
-logs/
+log/
+build/
+install/
 .*.swp
 __pycache__/
+9_dependencies/BehaviorTree.ROS2
+9_dependencies/BehaviorTree.CPP

@@ -17,8 +17,11 @@
 
 #include "bt_action_server/send_bt_action_server.hpp"
 
+#include <bt_executor/bt_executor.h>
+
 #include <functional>
 #include <memory>
+#include <sstream>
 #include <thread>
 
 #include "rclcpp/rclcpp.hpp"
@@ -41,6 +44,7 @@ SendBTActionServer::SendBTActionServer(BTExecutorPtr tree, std::shared_ptr<rclcp
 rclcpp_action::GoalResponse SendBTActionServer::handle_goal(
   const rclcpp_action::GoalUUID & uuid, std::shared_ptr<const ActionType::Goal> goal)
 {
+  std::lock_guard<std::mutex> lock(mutex_);
   RCLCPP_INFO(node_->get_logger(), "Received goal request");
   (void)uuid;
   return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
@@ -49,14 +53,16 @@ rclcpp_action::GoalResponse SendBTActionServer::handle_goal(
 rclcpp_action::CancelResponse SendBTActionServer::handle_cancel(
   const std::shared_ptr<GoalHandleTree> goal_handle)
 {
-  RCLCPP_INFO(node_->get_logger(), "Received request to cancel goal");
+  std::lock_guard<std::mutex> lock(mutex_);
+  RCLCPP_INFO(node_->get_logger(), "Received request to cancel Behavior Tree execution");
   (void)goal_handle;
-  tree_->stop();
+  RCLCPP_INFO(node_->get_logger(), "Cancel request accepted!");
   return rclcpp_action::CancelResponse::ACCEPT;
 }
 
 void SendBTActionServer::handle_accepted(const std::shared_ptr<GoalHandleTree> goal_handle)
 {
+  std::lock_guard<std::mutex> lock(mutex_);
   using namespace std::placeholders;
   // this needs to return quickly to avoid blocking the executor, so spin up a new thread
   std::thread{std::bind(&SendBTActionServer::execute, this, _1), goal_handle}.detach();
@@ -64,12 +70,27 @@ void SendBTActionServer::handle_accepted(const std::shared_ptr<GoalHandleTree> g
 
 void SendBTActionServer::execute(const std::shared_ptr<GoalHandleTree> goal_handle)
 {
+  start_time_ = std::chrono::steady_clock::now();
   const auto goal = goal_handle->get_goal();
   auto tree_xml = goal->tree.behavior_tree_xml;
   auto goal_tree_name = tree_->extractNameFromXml(tree_xml);
-  RCLCPP_INFO_STREAM(node_->get_logger(), "Execution of tree: " << goal_tree_name << " requested!");
 
-  rclcpp::Rate loop_rate(1);
+  std::ostringstream banner;
+  banner << "\n"
+         << "========================================\n"
+         << "  NEW EXECUTION REQUESTED: " << goal_tree_name << "\n";
+  if (goal->tree.blackboard.map.empty()) {
+    banner << "  Blackboard: <empty>\n";
+  } else {
+    banner << "  Blackboard:\n";
+    for (auto const & m : goal->tree.blackboard.map) {
+      banner << "    " << m.key << " = " << m.value << "\n";
+    }
+  }
+  banner << "========================================";
+  RCLCPP_INFO_STREAM(node_->get_logger(), banner.str());
+
+  rclcpp::Rate loop_rate(10);
   if (tree_->isTreeInMap(goal_tree_name)) {
     RCLCPP_WARN_STREAM(node_->get_logger(), "Tree already in map, overriding...");
   }
@@ -81,7 +102,7 @@ void SendBTActionServer::execute(const std::shared_ptr<GoalHandleTree> goal_hand
 
   auto feedback = std::make_shared<ActionType::Feedback>();
   auto result = std::make_shared<ActionType::Result>();
-
+  tree_->loadSubtrees();
   if (!tree_->loadTree(tree_xml, map)) {
     result->success = false;
     result->message = "Was not able to load tree!";
@@ -98,16 +119,26 @@ void SendBTActionServer::execute(const std::shared_ptr<GoalHandleTree> goal_hand
     return;
   }
 
+  std::lock_guard<std::mutex> lock(mutex_);
+
   success_ = true;
-  while (!tree_->isStopped()) {
+  while (tree_->isRunning()) {
+    auto end_time = std::chrono::steady_clock::now();
+    std::chrono::duration<float> elapsed = end_time - start_time_;
+    feedback->execution_time = elapsed.count();
+    goal_handle->publish_feedback(feedback);
+
     if (goal_handle->is_canceling()) {
+      if (!tree_->stop()) {
+        RCLCPP_ERROR(node_->get_logger(), "Failed to stop the Behavior Tree execution");
+      }
+      // set goal handle status to CANCELED
+      RCLCPP_INFO_STREAM(node_->get_logger(), "Goal canceled");
+      result->message = "Goal canceled, behavior tree stopped!";
+      result->success = false;
       goal_handle->canceled(result);
-      RCLCPP_INFO(node_->get_logger(), "Goal canceled");
-      result->message = "Goal canceled!";
-      tree_->stop();
       return;
     }
-    goal_handle->publish_feedback(feedback);
     loop_rate.sleep();
   }
 

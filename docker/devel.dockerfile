@@ -1,4 +1,4 @@
-FROM ros:humble-ros-base
+FROM ros:jazzy-ros-base
 
 ENV ROS_WS_DIR="/behavior_tree_stack_ws"
 ENV ROS_DISTRO="${ROS_DISTRO}"

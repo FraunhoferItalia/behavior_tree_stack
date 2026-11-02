@@ -29,6 +29,8 @@
 namespace bt_skill
 {
 
+static const auto kLogger = rclcpp::get_logger("skill_library");
+
 /**\class SkillLibrary
    * \brief Base class for registering skills with the behavior tree manager 
   */
@@ -61,6 +63,30 @@ public:
   {
     factory.registerNodeType<NodeT>(registration_id, params);
     return;
+  }
+
+  static void registerBehaviorTreeFromFile(
+    BT::BehaviorTreeFactory & factory, const std::string & file)
+  {
+    std::filesystem::path file_path(file);
+    if (file_path.extension() == ".xml") {
+      try {
+        factory.registerBehaviorTreeFromFile(file_path);
+        RCLCPP_INFO(kLogger, "Loaded BehaviorTree: %s", file_path.c_str());
+      } catch (const std::exception & e) {
+        RCLCPP_ERROR(kLogger, "Failed to load BehaviorTree: %s \n %s", file_path.c_str(), e.what());
+      }
+    }
+    return;
+  }
+
+  static void registerBehaviorTreesFromFolder(
+    BT::BehaviorTreeFactory & factory, const std::string & directory_path)
+  {
+    using std::filesystem::directory_iterator;
+    for (const auto & entry : directory_iterator(directory_path)) {
+      registerBehaviorTreeFromFile(factory, entry.path().string());
+    }
   }
 
   /**\fn load

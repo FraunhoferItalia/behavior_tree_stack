@@ -63,15 +63,6 @@ def generate_test_description():
                 description="Path to the node configuration file.",
             ),
             DeclareLaunchArgument(
-                "behavior_tree_definitions_path",
-                default_value=os.path.join(
-                    get_package_share_directory("bt_service_server"),
-                    "config",
-                    "trees/behavior_trees.yaml",
-                ),
-                description="Path to the behavior trees configuration file.",
-            ),
-            DeclareLaunchArgument(
                 "behavior_trees_path",
                 default_value=os.path.join(
                     get_package_share_directory("bt_service_server"), "config", "trees/"
@@ -138,7 +129,7 @@ class TestFixture(unittest.TestCase):
         minimal_client = SimpleServiceClient(String_srv, "play_specific")
         minimal_listener = MinimalListener()
         req = String_srv.Request()
-        req.str = "tree_2"
+        req.str = "TestTree2"
         minimal_client.fill_req(req)
         response = minimal_client.send_request()
         run = True

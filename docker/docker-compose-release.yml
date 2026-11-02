@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   behavior_tree_stack_release:
-    image: fhi-git.fraunhofer.it:5050/behavior-tree/behavior_tree_stack:release
+    image: fhi-git.fraunhofer.it:5050/behavior-tree/behavior_tree_stack:jazzy-release
     build:
       context: ..
       dockerfile: docker/release.dockerfile

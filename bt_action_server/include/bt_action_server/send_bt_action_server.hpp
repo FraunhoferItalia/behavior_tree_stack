@@ -54,8 +54,10 @@ protected:
   rclcpp::Node::SharedPtr node_;
 
   rclcpp_action::Server<ActionType>::SharedPtr bt_action_server_;
+  std::mutex mutex_;
 
   std::string bt_action_server_name_;
+  std::chrono::steady_clock::time_point start_time_;
   bool success_{true};
 
   BTExecutorPtr tree_;

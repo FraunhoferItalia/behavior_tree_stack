@@ -48,7 +48,7 @@ class BehaviorTreeExecutorTest : public ::testing::Test
 public:
   BehaviorTreeExecutorTest() : node_(std::make_shared<rclcpp::Node>("gtest_bt_executor"))
   {
-    RCLCPP_ERROR_STREAM(node_->get_logger(), "Constructor finished!");
+    RCLCPP_INFO_STREAM(node_->get_logger(), "Constructor finished!");
   }
 
 protected:
@@ -101,7 +101,7 @@ TEST_F(BehaviorTreeExecutorTest, runTreeNotInMap)
 TEST_F(BehaviorTreeExecutorTest, stopRunningTree)
 {
   bte_->loadTrees();
-  EXPECT_EQ(bte_->runTree("tree_2"), true);
+  EXPECT_EQ(bte_->runTree("TestTree2"), true);
   EXPECT_EQ(bte_->isRunning(), true);
   EXPECT_EQ(bte_->stop(), true);
 }
@@ -109,14 +109,14 @@ TEST_F(BehaviorTreeExecutorTest, stopRunningTree)
 TEST_F(BehaviorTreeExecutorTest, pause)
 {
   bte_->loadTrees();
-  bte_->runTree("tree_2");
+  bte_->runTree("TestTree2");
   EXPECT_EQ(bte_->pause(), true);
 }
 
 TEST_F(BehaviorTreeExecutorTest, isPaused)
 {
   bte_->loadTrees();
-  bte_->runTree("tree_2");
+  bte_->runTree("TestTree2");
   bte_->pause();
   EXPECT_EQ(bte_->isPaused(), true);
 }
@@ -124,7 +124,7 @@ TEST_F(BehaviorTreeExecutorTest, isPaused)
 TEST_F(BehaviorTreeExecutorTest, resumeTree)
 {
   bte_->loadTrees();
-  bte_->runTree("tree_2");
+  bte_->runTree("TestTree2");
   bte_->pause();
   EXPECT_EQ(bte_->resume(), true);
 }
@@ -132,7 +132,7 @@ TEST_F(BehaviorTreeExecutorTest, resumeTree)
 TEST_F(BehaviorTreeExecutorTest, isRunningTree)
 {
   bte_->loadTrees();
-  EXPECT_EQ(bte_->runTree("tree_1"), true);
+  EXPECT_EQ(bte_->runTree("TestTree1"), true);
   while (bte_->isRunning()) {
     sleep(0.1);
   }
@@ -148,7 +148,7 @@ TEST_F(BehaviorTreeExecutorTest, isLastTreeFailedInit)
 TEST_F(BehaviorTreeExecutorTest, isLastTreeFailed)
 {
   bte_->loadTrees();
-  bte_->runTree("tree_1"), true;
+  bte_->runTree("TestTree1"), true;
   while (bte_->isRunning()) {
     sleep(0.1);
   }
@@ -158,17 +158,17 @@ TEST_F(BehaviorTreeExecutorTest, isLastTreeFailed)
 TEST_F(BehaviorTreeExecutorTest, isLastTreeFailedSequence)
 {
   bte_->loadTrees();
-  bte_->runTree("tree_1"), true;
+  bte_->runTree("TestTree1"), true;
   while (bte_->isRunning()) {
     sleep(0.1);
   }
   EXPECT_EQ(bte_->isLastTreeFailed(), false);
-  bte_->runTree("tree_2"), true;
+  bte_->runTree("TestTree2"), true;
   while (bte_->isRunning()) {
     sleep(0.1);
   }
   EXPECT_EQ(bte_->isLastTreeFailed(), false);
-  bte_->runTree("tree_3"), true;
+  bte_->runTree("TestTree3"), true;
   while (bte_->isRunning()) {
     sleep(0.1);
   }
@@ -184,13 +184,13 @@ TEST_F(BehaviorTreeExecutorTest, isLastTreeFailedSequence)
 TEST_F(BehaviorTreeExecutorTest, penetrateWhileRunningTree)
 {
   bte_->loadTrees();
-  EXPECT_EQ(bte_->runTree("tree_2"), true);
+  EXPECT_EQ(bte_->runTree("TestTree2"), true);
   while (bte_->isRunning()) {
     bte_->loadTrees();
   }
-  EXPECT_EQ(bte_->runTree("tree_3"), true);
+  EXPECT_EQ(bte_->runTree("TestTree3"), true);
   while (bte_->isRunning()) {
-    EXPECT_EQ(bte_->runTree("tree_1"), false);
+    EXPECT_EQ(bte_->runTree("TestTree1"), false);
   }
   EXPECT_EQ(bte_->isRunning(), false);
 }
@@ -202,13 +202,13 @@ TEST_F(BehaviorTreeExecutorTest, penetrateWhileRunningTree)
 TEST_F(BehaviorTreeExecutorTest, runSeveralTrees)
 {
   bte_->loadTrees();
-  EXPECT_EQ(bte_->runTree("tree_2"), true);
+  EXPECT_EQ(bte_->runTree("TestTree2"), true);
   while (bte_->isRunning()) {
   }
-  EXPECT_EQ(bte_->runTree("tree_3"), true);
+  EXPECT_EQ(bte_->runTree("TestTree3"), true);
   while (bte_->isRunning()) {
   }
-  EXPECT_EQ(bte_->runTree("tree_1"), true);
+  EXPECT_EQ(bte_->runTree("TestTree1"), true);
   while (bte_->isRunning()) {
   }
   EXPECT_EQ(bte_->isRunning(), false);
@@ -221,7 +221,7 @@ TEST_F(BehaviorTreeExecutorTest, runSeveralTrees)
 TEST_F(BehaviorTreeExecutorTest, fromRunningToPaused)
 {
   bte_->loadTrees();
-  bte_->runTree("tree_2");
+  bte_->runTree("TestTree2");
   EXPECT_EQ(bte_->isRunning(), true);
   EXPECT_EQ(bte_->pause(), true);
   EXPECT_EQ(bte_->isPaused(), true);
@@ -230,7 +230,7 @@ TEST_F(BehaviorTreeExecutorTest, fromRunningToPaused)
 TEST_F(BehaviorTreeExecutorTest, fromRunningToManual)
 {
   bte_->loadTrees();
-  bte_->runTree("tree_2");
+  bte_->runTree("TestTree2");
   EXPECT_EQ(bte_->isRunning(), true);
   bte_->manualTick();
   EXPECT_EQ(bte_->isManualMode(), true);
@@ -239,7 +239,7 @@ TEST_F(BehaviorTreeExecutorTest, fromRunningToManual)
 TEST_F(BehaviorTreeExecutorTest, fromPausedToRunning)
 {
   bte_->loadTrees();
-  bte_->runTree("tree_2");
+  bte_->runTree("TestTree2");
   EXPECT_EQ(bte_->isRunning(), true);
   bte_->pause();
   EXPECT_EQ(bte_->resume(), true);
@@ -248,7 +248,7 @@ TEST_F(BehaviorTreeExecutorTest, fromPausedToRunning)
 TEST_F(BehaviorTreeExecutorTest, fromPausedToRunningSeveralTimes)
 {
   bte_->loadTrees();
-  bte_->runTree("tree_2");
+  bte_->runTree("TestTree2");
   EXPECT_EQ(bte_->isRunning(), true);
   for (int i = 0; i < 4; i++) {
     bte_->pause();
@@ -261,7 +261,7 @@ TEST_F(BehaviorTreeExecutorTest, fromPausedToRunningSeveralTimes)
 TEST_F(BehaviorTreeExecutorTest, fromPauseToStop)
 {
   bte_->loadTrees();
-  bte_->runTree("tree_2");
+  bte_->runTree("TestTree2");
   bte_->pause();
   EXPECT_EQ(bte_->stop(), true);
   EXPECT_EQ(bte_->isStopped(), true);
@@ -282,7 +282,7 @@ TEST_F(BehaviorTreeExecutorTest, executorStateOnInit)
 TEST_F(BehaviorTreeExecutorTest, fromManualToRunning)
 {
   bte_->loadTrees();
-  bte_->runTree("tree_2");
+  bte_->runTree("TestTree2");
   bte_->manualTick();
   EXPECT_EQ(bte_->resume(), true);
   EXPECT_EQ(bte_->isRunning(), true);
@@ -291,20 +291,20 @@ TEST_F(BehaviorTreeExecutorTest, fromManualToRunning)
 TEST_F(BehaviorTreeExecutorTest, fromManualToStop)
 {
   bte_->loadTrees();
-  bte_->runTree("tree_2");
+  bte_->runTree("TestTree2");
 }
 
 TEST_F(BehaviorTreeExecutorTest, getExecutorStateRunning)
 {
   bte_->loadTrees();
-  bte_->runTree("tree_1");
+  bte_->runTree("TestTree1");
   EXPECT_EQ(bte_->getExecutorState(), BehaviorTreeExecutor::ExecutorState::RUNNING);
 }
 
 TEST_F(BehaviorTreeExecutorTest, getExecutorStatePaused)
 {
   bte_->loadTrees();
-  bte_->runTree("tree_1");
+  bte_->runTree("TestTree1");
   bte_->pause();
   EXPECT_EQ(bte_->getExecutorState(), BehaviorTreeExecutor::ExecutorState::PAUSED);
 }
@@ -312,7 +312,7 @@ TEST_F(BehaviorTreeExecutorTest, getExecutorStatePaused)
 TEST_F(BehaviorTreeExecutorTest, getExecutorStateManualMode)
 {
   bte_->loadTrees();
-  bte_->runTree("tree_1");
+  bte_->runTree("TestTree1");
   bte_->manualTick();
   EXPECT_EQ(bte_->getExecutorState(), BehaviorTreeExecutor::ExecutorState::MANUAL_MODE);
 }
@@ -320,14 +320,14 @@ TEST_F(BehaviorTreeExecutorTest, getExecutorStateManualMode)
 TEST_F(BehaviorTreeExecutorTest, isExecutorThreadActive)
 {
   bte_->loadTrees();
-  bte_->runTree("tree_1");
+  bte_->runTree("TestTree1");
   EXPECT_EQ(bte_->isExecutorThreadActive(), true);
 }
 
 TEST_F(BehaviorTreeExecutorTest, isExecutorThreadInActive)
 {
   bte_->loadTrees();
-  bte_->runTree("tree_1");
+  bte_->runTree("TestTree1");
   bte_->stop();
   EXPECT_EQ(bte_->isExecutorThreadActive(), false);
 }
@@ -336,7 +336,7 @@ TEST_F(BehaviorTreeExecutorTest, isExecutorThreadInActiveLoop)
 {
   bte_->loadTrees();
   for (int i = 0; i++; i < 10) {
-    bte_->runTree("tree_1");
+    bte_->runTree("TestTree1");
     bte_->stop();
     EXPECT_EQ(bte_->isExecutorThreadActive(), false);
     sleep(0.2);
@@ -352,7 +352,7 @@ TEST_F(BehaviorTreeExecutorTest, getTreeAsXmlNonsense)
 TEST_F(BehaviorTreeExecutorTest, getTreeAsXml)
 {
   bte_->loadTrees();
-  EXPECT_NE(bte_->getTreeAsXml("tree_1"), "");
+  EXPECT_NE(bte_->getTreeAsXml("TestTree1"), "");
 }
 
 TEST_F(BehaviorTreeExecutorTest, testException)

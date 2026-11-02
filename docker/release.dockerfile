@@ -1,4 +1,4 @@
-FROM fhi-git.fraunhofer.it:5050/behavior-tree/behavior_tree_stack:devel
+FROM fhi-git.fraunhofer.it:5050/behavior-tree/behavior_tree_stack:jazzy-devel
 
 ENV ROS_WS_DIR="/behavior_tree_stack_ws"
 ENV ROS_DISTRO="${ROS_DISTRO}"

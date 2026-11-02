@@ -52,7 +52,6 @@ set(dependencies
 
 add_library(${LIBRARY_NAME} SHARED
   src/bt_action_server.cpp 
-  src/load_bt_action_server.cpp 
   src/send_bt_action_server.cpp 
 )
 
@@ -62,9 +61,6 @@ target_link_libraries(bt_action_server_node ${LIBRARY_NAME} ${bt_executor_LIBRAR
 target_compile_definitions(bt_action_server
   PRIVATE "ACTION_TUTORIALS_CPP_BUILDING_DLL")
 
-add_executable(load_bt_action_server_node src/load_bt_action_server_node.cpp src/load_bt_action_server.cpp)
-target_link_libraries(load_bt_action_server_node ${LIBRARY_NAME} ${bt_executor_LIBRARIES})
-
 add_executable(send_bt_action_server_node src/send_bt_action_server_node.cpp src/send_bt_action_server.cpp)
 target_link_libraries(send_bt_action_server_node ${LIBRARY_NAME} ${bt_executor_LIBRARIES})
 
@@ -73,7 +69,6 @@ ament_target_dependencies(${LIBRARY_NAME} ${dependencies})
 
 if(ZeroMQ_FOUND)
   target_link_libraries(bt_action_server_node ${ZeroMQ_LIBRARIES} ${bt_executor_LIBRARIES})
-  target_link_libraries(load_bt_action_server_node ${ZeroMQ_LIBRARIES} ${bt_executor_LIBRARIES})
   target_link_libraries(send_bt_action_server_node ${ZeroMQ_LIBRARIES} ${bt_executor_LIBRARIES})
 endif()
 
@@ -83,7 +78,7 @@ install(TARGETS bt_action_server
 	LIBRARY DESTINATION lib
 	RUNTIME DESTINATION bin)
 
-install(TARGETS bt_action_server_node load_bt_action_server_node send_bt_action_server_node
+install(TARGETS bt_action_server_node send_bt_action_server_node
 	RUNTIME DESTINATION lib/${LIBRARY_NAME})
 
 install(DIRECTORY include/ DESTINATION include/)
@@ -95,6 +90,13 @@ install(DIRECTORY
   DESTINATION 
   share/${PROJECT_NAME}
 )
+
+install(PROGRAMS 
+  scripts/bt_action_client.py
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+ament_python_install_package(${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_cmake_pytest REQUIRED)

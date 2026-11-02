@@ -2,9 +2,9 @@
 
 Author: [Michael Terzer](mailto:michael.terzer@fraunhofer.it) - Fraunhofer Italia (2023)
 
-This package provides a template for robotic skill implementations in form of behavior tree nodes to be used in combination with the [behavior_tree_stack](https://github.com/FraunhoferItalia/behavior_tree_stack).
+This package provides a template for robotic skill implementations in form of behavior tree nodes to be used in combination with the [behavior_tree_stack](https://fhi-git01.fraunhofer.it/behavior-tree/behavior_tree_stack).
 
-The nodes implemented in this package, get registered and loaded by the plugin `bt_demo_skills::SkillLibrary`, which inherits from the [behavior_tree_stack](https://github.com/FraunhoferItalia/behavior_tree_stack) `bt_skill::SkillLibraryBase` class.
+The nodes implemented in this package, get registered and loaded by the plugin `bt_demo_skills::SkillLibrary`, which inherits from the [behavior_tree_stack](https://fhi-git01.fraunhofer.it/behavior-tree/behavior_tree_stack) `bt_skill::SkillLibraryBase` class.
 
 ## How to create a new skill
 

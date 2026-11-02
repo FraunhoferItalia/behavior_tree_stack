@@ -9,7 +9,7 @@
 
 
 function main {
-  ROS_DISTRO=${1:-"humble"}
+  ROS_DISTRO=${1:-"jazzy"}
   CURRENT_PATH=$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)
   WORKSPACE_SOURCE_FILE="${CURRENT_PATH}/../install/setup.bash"
   DISTRO_SOURCE_FILE="/opt/ros/${ROS_DISTRO}/setup.bash"

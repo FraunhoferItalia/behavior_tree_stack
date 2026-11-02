@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   behavior_tree_stack_devel:
-    image: fhi-git.fraunhofer.it:5050/behavior-tree/behavior_tree_stack:devel
+    image: fhi-git.fraunhofer.it:5050/behavior-tree/behavior_tree_stack:jazzy-devel
     container_name: bt_stack
     build:
       context: ..
@@ -11,6 +11,9 @@ services:
       - PYTHONUNBUFFERED=1
       - DISPLAY=${DISPLAY}
       - QT_X11_NO_MITSHM=1
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID}
+      - ROS_LOCALHOST_ONLY=${ROS_LOCALHOST_ONLY}
+
     network_mode: host
     privileged: true
     volumes:
