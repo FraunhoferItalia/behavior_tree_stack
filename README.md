@@ -80,7 +80,6 @@ Please find parts of this work in the below article. Any citation would be very 
   author = {Terzer, Michael and Flatscher, Tobit and Magri, Marco and Garbin, Simone and Emig, Julius and Giusti, Andrea},
   journal = {10th International Conference on Control, Decision and Information Technologies CoDIT24},
   year = {2024},
-  note = {to be published},
   publisher={IEEE}
 }
 ```
